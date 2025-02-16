@@ -7,22 +7,7 @@ interface MessageListProps {
 }
 
 export default function MessageList({ messages }: MessageListProps) {
-  const [renderedMessages, setRenderedMessages] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // Convert message content to HTML using Markdown parser
-  useEffect(() => {
-    try {
-      const newMessages = messages.map(
-        (message) => marked(message.content) // Sanitize HTML to prevent XSS
-      ) as string[];
-      setRenderedMessages(newMessages);
-    } catch (error) {
-      console.error("Error parsing Markdown:", error);
-      // Fallback to plain text if Markdown parsing fails
-      setRenderedMessages(messages.map((message) => message.content));
-    }
-  }, [messages]);
 
   // Scroll to the bottom whenever messages are updated
   useEffect(() => {
@@ -33,7 +18,7 @@ export default function MessageList({ messages }: MessageListProps) {
 
   return (
     <div className="space-y-4 mb-4 h-[60vh] overflow-y-auto">
-      {messages.map((message, index) => (
+      {messages.map((message) => (
         <div
           key={message.id}
           className={`flex ${
@@ -47,7 +32,9 @@ export default function MessageList({ messages }: MessageListProps) {
                 : "bg-gray-200 text-gray-800"
             }`}
             // Using dangerouslySetInnerHTML to render HTML content
-            dangerouslySetInnerHTML={{ __html: renderedMessages[index] || "" }}
+            dangerouslySetInnerHTML={{
+              __html: marked(message.content) || "",
+            }}
           />
         </div>
       ))}

@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Call Together API
+    // Call Together API with streaming
     const response = await fetch(
       "https://api.together.xyz/v1/chat/completions",
       {
@@ -114,6 +114,7 @@ export async function POST(req: NextRequest) {
           ],
           max_tokens: 500,
           temperature: 0.7,
+          stream: true, // Enable streaming
         }),
       }
     );
@@ -124,14 +125,16 @@ export async function POST(req: NextRequest) {
       throw new Error("Failed to get LLM response.");
     }
 
-    const data = await response.json();
-    if (!data.choices?.[0]?.message?.content) {
-      throw new Error("Invalid response format from LLM.");
-    }
-
-    return NextResponse.json({
-      success: true,
-      response: data.choices[0].message.content,
+    // Create a ReadableStream from the response body
+    const stream = response.body;
+    console.log("stream", stream);
+    // Return the stream as the response
+    return new NextResponse(stream, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+      },
     });
   } catch (error) {
     console.error("Error in chat route:", error);

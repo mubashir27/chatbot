@@ -114,26 +114,87 @@ export default function Chat() {
         return;
       }
 
-      const data = await response.json();
-      if (!data.response) {
-        toast.error("Invalid response from the server.");
-        return;
-      }
-
+      // Create a bot message with an empty initial content
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: data.response,
+        content: "",
       };
 
-      // Update messages with the bot's response
+      // Add the bot message to the messages list
       if (isMounted) {
         setMessages((prevMessages) => [...prevMessages, botMessage]);
+      }
+
+      // Read the streamed response
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error("Failed to read the response stream.");
+      }
+
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        // Decode the chunk and append to the buffer
+        buffer += decoder.decode(value, { stream: true });
+
+        // Process each complete JSON chunk
+        const chunks = buffer.split("\n");
+        buffer = chunks.pop() || ""; // Save incomplete chunk for the next iteration
+
+        for (const chunk of chunks) {
+          if (!chunk.trim()) continue; // Skip empty lines
+
+          // Skip the [DONE] message
+          if (chunk === "data: [DONE]") {
+            console.log("[DONE]", chunk);
+            break;
+          }
+          console.log("reader", chunk);
+
+          try {
+            // Remove "data: " prefix and parse JSON
+            const jsonString = chunk.replace(/^data: /, "");
+            if (!jsonString.trim()) continue; // Skip empty JSON strings
+
+            const json = JSON?.parse(jsonString);
+
+            if (json.choices && json.choices[0]?.delta?.content) {
+              const content = json.choices[0].delta.content;
+
+              // Update the bot's message with the new content without duplication
+              if (isMounted) {
+                setMessages((prevMessages) => {
+                  const updatedMessages = [...prevMessages];
+                  const lastMessage =
+                    updatedMessages[updatedMessages.length - 1];
+                  if (lastMessage.role === "assistant") {
+                    // Only append content if it hasn't been appended before
+                    const currentContent = lastMessage.content.trim();
+                    const contentToAdd = content.trim();
+
+                    // Check if content is already at the end of the current message to avoid repetition
+                    if (!currentContent.endsWith(contentToAdd)) {
+                      lastMessage.content += content;
+                    }
+                  }
+                  return updatedMessages;
+                });
+              }
+            }
+          } catch (error) {
+            console.error("Failed to parse JSON chunk:", chunk, error);
+          }
+        }
       }
     } catch (error) {
       console.log("Error:", error);
       if (error instanceof Error)
-        toast.error(error.message || "Something went wrong! Please try again."); // want to handle 504 gateway error
+        toast.error(error.message || "Something went wrong! Please try again.");
     } finally {
       if (isMounted) {
         setIsTyping(false);
