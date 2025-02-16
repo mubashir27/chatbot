@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { marked } from "marked";
 import type { Message } from "../../app/page";
 
