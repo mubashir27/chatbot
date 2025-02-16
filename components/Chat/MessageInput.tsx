@@ -6,12 +6,14 @@ interface MessageInputProps {
   input: string;
   handleInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  disabled: boolean;
 }
 
 export default function MessageInput({
   input,
   handleInputChange,
   onSubmit,
+  disabled,
 }: MessageInputProps) {
   return (
     <form onSubmit={onSubmit} className="flex space-x-2">
@@ -21,7 +23,9 @@ export default function MessageInput({
         placeholder="Type your message..."
         className="flex-grow"
       />
-      <Button type="submit">Send</Button>
+      <Button type="submit" disabled={disabled}>
+        Send
+      </Button>
     </form>
   );
 }

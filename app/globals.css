@@ -5,6 +5,9 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
+.sidebar {
+  display: none;
+}
 
 @layer base {
   :root {
