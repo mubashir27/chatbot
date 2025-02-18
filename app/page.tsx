@@ -53,7 +53,7 @@ export default function Chat() {
 
     const urlRegex = /(https?:\/\/[^\s]+|[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
     const foundUrls = input.match(urlRegex);
-    let extractedUrl = foundUrls
+    const extractedUrl = foundUrls
       ? `https://${foundUrls[0].replace(/^https?:\/\//, "")}`
       : null;
 
