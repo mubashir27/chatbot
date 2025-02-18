@@ -1,5 +1,21 @@
 # 🚀 Project: Chatbot with Website Data
 
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
 This project combines **Firecrawl** and **Together API** to create an intelligent chatbot that uses website data to provide accurate responses.
 
 ## 🛠️ Tools Used
