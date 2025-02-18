@@ -69,7 +69,7 @@ await fetch("https://api.together.xyz/v1/chat/completions", {
     ],
     max_tokens: 500,
     temperature: 0.7,
-    stream: true, // Enable streaming
+    stream: true,
   }),
 });
 ```
