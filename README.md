@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Project: Chatbot with Website Data
 
-## Getting Started
+This project combines **Firecrawl** and **Together API** to create an intelligent chatbot that uses website data to provide accurate responses.
 
-First, run the development server:
+## 🛠️ Tools Used
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+1. **Firecrawl** – Extracts data from websites.
+2. **Together API** – Powers the chatbot using AI.
+
+---
+
+## 🔍 How It Works
+
+### 1️⃣ Extract Website Data
+
+- **Firecrawl** visits a website and scrapes its content.
+- The extracted data is saved in a structured format (e.g., Markdown).
+
+```javascript
+const app = new FirecrawlApp({ apiKey: FIRECRAWL_API_KEY! });
+const crawlResult = (await app.crawlUrl(url, {
+  limit: 10,
+  scrapeOptions: { formats: ["markdown"] },
+})) as CrawlStatusResponse;
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2️⃣ AI-Powered Chatbot
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Uses **Qwen AI** via **Together API** to generate responses.
+- Integrates website data into chatbot conversations for more relevant answers.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```javascript
+await fetch("https://api.together.xyz/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${TOGETHER_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    model: "Qwen/Qwen2.5-72B-Instruct-Turbo",
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are an AI assistant that uses website data to enhance responses.",
+      },
+      {
+        role: "user",
+        content: crawledData
+          ? `Website data: ${crawledData}\n\nUser query: ${message}`
+          : message,
+      },
+    ],
+    max_tokens: 500,
+    temperature: 0.7,
+    stream: true, // Enable streaming
+  }),
+});
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 📌 Summary
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+✅ **Firecrawl** collects data from websites.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+✅ **Together API** uses this data to enhance chatbot responses.
 
-## Deploy on Vercel
+✅ The chatbot can answer questions using real website content, making it more informative and reliable.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📢 Why Use This?
+
+- **Real-time Streaming** 🚀 – Delivers responses quickly and efficiently.
+
+---
+
+🚀 **Assessment Complete !**
