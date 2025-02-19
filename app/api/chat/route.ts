@@ -4,7 +4,7 @@ import { isValidUrl } from "@/app/utils/helper";
 
 // Environment variables for API keys
 const TOGETHER_API_KEY = process.env.TOGETHER_API_KEY;
-const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY;
+const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY || 'fc-cfa501152d1049e1943ede8266e46e95';
 
 // Validate environment variables
 if (!TOGETHER_API_KEY || !FIRECRAWL_API_KEY) {
